@@ -30,3 +30,163 @@ void ListPopBack(ListNode* phead);//尾删
 ListNode* ListFind(ListNode* phead, LTDataType x);//查找
 void ListInsert(ListNode* pos, LTDataType x);//在pos的前面进行插入
 void ListErase(ListNode* pos);//删除pos位置的节点
+
+
+
+//List.c
+#include"List.h"
+
+ListNode* BuyListNode(LTDataType x)//创建返回链表的头结点
+{
+	ListNode* newnode = (ListNode*)malloc(sizeof(ListNode));
+	newnode->data = x;
+	newnode->next = NULL;
+	newnode->prev = NULL;
+
+	return newnode;
+}
+
+//初始化
+ListNode* ListInit()
+{
+	//创建头节点（data=0，前后两个地址存自己本身） 
+	ListNode* phead = BuyListNode(0);
+	phead->next = phead;
+	phead->prev = phead;
+
+	return phead;
+}
+
+void ListPrint(ListNode* phead)//双向链表打印
+{
+	assert(phead);
+	//打印从头节依次打印直到回到头节点（如果是空链表循环走不进去）
+	ListNode* cur = phead->next;
+	while (cur != phead)
+	{
+		printf("%d ", cur->data);
+		cur = cur->next;
+	}
+	printf("\n");
+}
+
+void ListDestory(ListNode* phead)//双向链表销毁
+{
+	assert(phead);
+	ListNode* cur = phead->next;
+	while (cur != phead)
+	{
+		ListNode* next = cur->next;
+		free(cur);
+		cur = next;
+	}
+	//phead也销毁
+	free(phead);
+	phead = NULL;
+}
+
+
+void ListPushBack(ListNode* phead, LTDataType x)//双向循环链表尾插
+{
+	assert(phead);
+	ListNode* tail = phead->prev;
+	ListNode* newnode = BuyListNode(x);
+
+	tail->next = newnode;
+	newnode->prev = tail;
+	newnode->next = phead;
+	phead->prev = newnode;
+
+
+	//方法二：
+	ListInsert(phead, x);//相当于在头节点的前边插入
+}
+
+void ListPushFront(ListNode* phead, LTDataType x)//双向循环链表头插
+{
+	assert(phead);
+	ListNode* first = phead->next;
+	ListNode* newnode = BuyListNode(x);
+
+	//顺序可以随便换（创建了一个中间指针变量frist）
+	first->prev = newnode;
+	newnode->next = first;
+	newnode->prev = phead;
+	phead->next = newnode;
+
+
+	//方法二：
+	//ListInsert(phead->next, x);//相当于在第一个节点（phead->next）的前面插入
+}
+
+void ListPopBack(ListNode* phead)//双向链表尾删
+{
+	assert(phead);
+	assert(phead->next != phead);//一个节点都没有
+	ListNode* tail = phead->prev;
+	ListNode* prev = tail->prev;
+	prev->next = phead;
+	phead->prev = prev;
+
+	free(tail);
+	tail = NULL;
+
+
+	//方法二：
+	//ListErase(phead->prev);//删除最后一个节点（phead->prev）
+}
+
+void ListPopFront(ListNode* phead)//双向链表头删
+{
+	assert(phead);
+	assert(phead->next != phead);//一个节点都没有
+	ListNode* first = phead->next;
+	ListNode* second = first->next;
+	phead->next = second;
+	second->prev = phead;
+
+	free(first);
+	first = NULL;
+
+
+	//方法二：
+	//ListErase(phead->next);//删除第一个节点（phead->next）
+}
+
+ListNode* ListFind(ListNode* phead, LTDataType x)//双向链表查找
+{
+	assert(phead);
+	ListNode* cur = phead->next;
+	while (cur != phead)
+	{
+		if (x == cur->data)
+		{
+			return cur;
+		}
+		cur = cur->next;
+	}
+	return NULL;
+}
+
+void ListInsert(ListNode* pos, LTDataType x)//双向链表在pos的前面进行插入
+{
+	assert(pos);
+	ListNode* prev = pos->prev;
+	ListNode* newnode = BuyListNode(x);
+
+	newnode->prev = prev;
+	prev->next = newnode;
+	newnode->next = pos;
+	pos->prev = newnode;
+}
+
+void ListErase(ListNode* pos)//双向链表删除pos位置的节点
+{
+	assert(pos);
+	ListNode* prev = pos->prev;
+	ListNode* next = pos->next;
+	prev->next = next;
+	next->prev = prev;
+	free(pos);
+	pos = NULL;
+}
