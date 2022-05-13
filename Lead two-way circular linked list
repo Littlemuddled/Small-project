@@ -190,3 +190,67 @@ void ListErase(ListNode* pos)//双向链表删除pos位置的节点
 	free(pos);
 	pos = NULL;
 }
+
+
+
+//test.c
+#include"List.h"
+
+void TestList()
+{
+	ListNode* plist = ListInit();
+	ListPushBack(plist, 1);
+	ListPushBack(plist, 2);
+	ListPushBack(plist, 3);
+	ListPushBack(plist, 4);
+	ListPushBack(plist, 5);
+	ListPushBack(plist, 6);
+	ListPushBack(plist, 7);
+
+	ListPrint(plist);
+
+	ListPushFront(plist, 0);
+	ListPushFront(plist, -1);
+	ListPushFront(plist, -2);
+	ListPushFront(plist, -3);
+	
+	ListPrint(plist);
+
+	ListPopFront(plist);
+	ListPopFront(plist);
+	ListPopFront(plist);
+
+	ListPrint(plist);
+
+	ListPopBack(plist);
+	ListPopBack(plist);
+
+	ListPrint(plist);
+
+	ListNode* pos = ListFind(plist, 3);
+	if (pos)
+	{
+		//查找附带修改的作用（返回的是数据的地址）
+		pos->data *= 10;
+		printf("找到了,且乘以10。\n");
+	}
+	else
+	{
+		printf("没有找到\n");
+	}
+	ListPrint(plist);
+
+	ListInsert(pos, 300);
+	ListPrint(plist);
+
+	ListErase(pos);
+	ListPrint(plist);
+
+	ListDestory(plist);
+}
+
+int main()
+{
+	TestList();
+	return 0;
+}
