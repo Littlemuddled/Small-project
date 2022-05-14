@@ -95,3 +95,180 @@ int StackEmpty(Stack* ps)//检测栈是否为空，如果为空返回非零结�
 }
 
 
+
+//Queue.h
+#pragma once
+
+#include<stdio.h>
+#include<assert.h>
+#include<stdlib.h>
+#include<stdbool.h>
+
+typedef int QDataType;
+//链式结构：表示队列
+typedef struct QListNode
+{
+	struct QListNode* next;
+	QDataType data;
+}QNode;
+//队列的结构
+typedef struct Queue
+{
+	QNode* head;
+	QNode* tail;
+}Queue;
+
+void QueueInit(Queue* pq);//初始化队列
+void QueuePush(Queue* pq, QDataType data);//队尾入队列
+void QueuePop(Queue* pq);//队头出队列
+QDataType QueueFront(Queue* pq);//获取队列头部元素
+QDataType QueueBack(Queue* pq);//获取队列队尾元素
+int QueueSize(Queue* pq);//获取队列中有效元素个数
+bool QueueEmpty(Queue* pq);//检测队列是否为空
+void QueueDestroy(Queue* pq);//销毁队列
+
+
+
+//Queue,c
+#include"Queue.h"
+
+
+void QueueInit(Queue* pq)//初始化队列
+{
+	assert(pq);
+	pq->head = pq->tail == NULL;
+}
+void QueueDestroy(Queue* pq)//销毁队列
+{
+	assert(pq);
+	QNode* cur = pq->head;
+	while (cur)
+	{
+		QNode* next = cur->next;//保存下一个节点的地址
+		free(cur);
+		cur = next;
+	}
+	pq->head = pq->tail = NULL;
+}
+
+void QueuePush(Queue* pq, QDataType data)//队尾入队列
+{
+	assert(pq);
+	QNode* newnode = (QNode*)malloc(sizeof(QNode));
+	if (NULL == newnode)
+	{
+		printf("空间开辟失败\n");
+		return;
+	}
+	newnode->data = data;
+	newnode->next = NULL;
+	if (NULL == pq->tail)
+	{
+		pq->head = pq->tail = newnode;
+	}
+	else
+	{
+		pq->tail->next = newnode;
+		pq->tail = newnode;
+	}
+}
+void QueuePop(Queue* pq)//队头出
+{
+	assert(pq);
+	assert(pq->head);
+	//如果只有一个，tail指针访问就是NULL—野指针
+	if (NULL == pq->head)
+	{
+		free(pq->head);
+		pq->head = pq->tail = NULL;
+	}
+	//多个
+	else
+	{
+		QNode* next = pq->head->next;//保存下一个节点的地址
+		free(pq->head);
+		pq->head = next;
+	}
+}
+QDataType QueueFront(Queue* pq)//获取队列头部元素
+{
+	assert(pq);
+	assert(pq->head);
+	return pq->head->data;
+}
+QDataType QueueBack(Queue* pq)//获取队列队尾元素
+{
+	assert(pq);
+	assert(pq->tail);
+	return pq->tail->data;
+}
+int QueueSize(Queue* pq)//获取队列中有效元素个数
+{
+	assert(pq);
+	int size = 0;
+	QNode* cur = pq->head;
+	while (cur)
+	{
+		size++;
+		cur = cur->next;
+	}
+	return size;
+}
+
+bool QueueEmpty(Queue* pq)//检测队列是否为空
+{
+	assert(pq);
+	return pq->head == NULL;
+}
+
+
+//Test.c
+#include"Stack.h"
+#include"Queue.h"
+
+void TestStack()
+{
+	Stack st;
+	StackInit(&st);
+	StackPush(&st, 1);
+	StackPush(&st, 2);
+	StackPush(&st, 3);
+	StackPush(&st, 4);
+	StackPush(&st, 5);
+	//栈不能遍历
+	while (StackEmpty(&st) != 0)
+	{
+		printf("%d ", StackTop(&st));//由栈的性质只能取栈顶的数据
+		StackPop(&st);//取一个栈顶的数删除一个才能取下一个
+	}
+
+	StackDestroy(&st);
+}
+
+void TestQueue()
+{
+	Queue* q;
+	QueueInit(&q);
+	QueuePush(&q, 1);
+	QueuePush(&q, 2);
+	QueuePush(&q, 3);
+	QueuePush(&q, 4);
+	QueuePush(&q, 5);
+	//队列也不能遍历
+	while (!QueueEmpty(&q))
+	{
+		printf("%d ", QueueFront(&q));//由队列的性质只能取对头的数据
+		QueuePop(&q);//取一个对头的数据然后删除一个才能取下一个
+	}
+	printf("\n");
+
+	QueueDestroy(&q);
+}
+
+int main()
+{
+	TestStack();
+	TestQueue();
+
+	return 0;
+}
