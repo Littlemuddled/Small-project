@@ -1,0 +1,97 @@
+//Stack.h
+#pragma once
+
+#include<stdio.h>
+#include<assert.h>
+#include<stdlib.h>
+
+typedef int STDataType;
+typedef struct Stack
+{
+	STDataType* a;//数据
+	int top;//栈顶
+	int capacity; //容量
+}Stack;
+
+void StackInit(Stack* ps);//初始化栈
+void StackPush(Stack* ps, STDataType data);//入栈
+void StackPop(Stack* ps);//出栈
+STDataType StackTop(Stack* ps);//获取栈顶元素
+int StackSize(Stack* ps);//获取栈中有效元素个数
+int StackEmpty(Stack* ps);//检测栈是否为空，如果为空返回非零结果，如果不为空返回0
+void StackDestroy(Stack* ps);//销毁栈
+
+
+//Stack.c
+#include"Stack.h"
+
+
+void StackInit(Stack* ps)//初始化栈
+{
+	assert(ps);
+	STDataType* tmp = (STDataType*)malloc(sizeof(STDataType) * 4);
+	if (NULL == tmp)
+	{
+		printf("增容失败\n");
+		return;
+	}
+	else
+	{
+		ps->a = tmp;
+		ps->capacity = 4;
+	}
+	ps->top = 0;//初始top给0，意味着top指向的是栈顶元素的下一个（初始给-1，top指向的是栈定元素）
+}
+void StackDestroy(Stack* ps)//销毁栈
+{
+	assert(ps);
+	free(ps->a);
+	ps->a = NULL;
+	ps->top = 0;
+	ps->capacity = 0;
+}
+void StackPush(Stack* ps, STDataType data)//入栈
+{
+	assert(ps);
+	//满了增容
+	if (ps->top == ps->capacity)
+	{
+		STDataType* tmp = (STDataType*)realloc(ps->a, ps->capacity * 2 * sizeof(STDataType));//每次满了增加二倍的空间
+		if (NULL == tmp)
+		{
+			printf("增容失败\n");
+			return;
+		}
+		else
+		{
+			ps->a = tmp;
+			ps->capacity *= 2;
+		}
+	}
+	ps->a[ps->top] = data;
+	ps->top++;
+}
+void StackPop(Stack* ps)//出栈
+{
+	assert(ps);
+	assert(ps->top > 0);//栈空了，调用StackPop，直接终止，报错。
+	ps->top--;
+}
+STDataType StackTop(Stack* ps)//获取栈顶元素
+{
+	assert(ps);
+	assert(ps->top > 0);//栈空了，调用StackPop，直接终止，报错。
+	return ps->a[ps->top - 1];
+}
+int StackSize(Stack* ps)//获取栈中有效元素个数
+{
+	assert(ps);
+	return ps->top;
+}
+int StackEmpty(Stack* ps)//检测栈是否为空，如果为空返回非零结果，如果不为空返回0
+{
+	assert(ps);
+	return ps->top;
+}
+
+
