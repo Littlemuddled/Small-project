@@ -1,0 +1,174 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<stdbool.h>
+
+typedef char BTDataType;
+typedef struct BinaryTreeNode
+{
+	struct BinaryTreeNode* left;
+	struct BinaryTreeNode* right;
+	BTDataType data;
+}BTNode;
+
+//树一般不直接遍历没有意义，就前中后序遍历
+//分治递归算法
+
+void PrevOrder(BTNode* root)//前序
+{
+	if (NULL == root)
+	{
+		printf("NULL ");
+		return;
+	}
+	printf("%c ", root->data);
+	PrevOrder(root->left);
+	PrevOrder(root->right);
+}
+void InOrder(BTNode* root)//中序
+{
+	if (NULL == root)
+	{
+		printf("NULL ");
+		return;
+	}
+	InOrder(root->left);
+	printf("%c ", root->data);
+	InOrder(root->right);
+}
+void PostOrder(BTNode* root)//后序
+{
+	if (NULL == root)
+	{
+		printf("NULL ");
+		return;
+	}
+	PostOrder(root->left);
+	PostOrder(root->right);
+	printf("%c ", root->data);
+}
+
+//int size = 0;//方式一：定义全局变量（一般不用）
+int TreeSize(BTNode* root)//求树节点的个数
+{
+	//if (NULL == root)
+	//{
+	//	return;
+	//}
+	//++size;
+	//TreeSize(root->left);
+	//TreeSize(root->right);
+	//return size;
+
+	//方式二
+	return root == NULL ? 0 : TreeSize(root->left) + TreeSize(root->right) + 1;
+}
+
+int TreeLeafSize(BTNode* root)//求叶子节点的个数
+{
+	if (NULL == root)
+		return 0;
+	if (NULL == root->left && NULL == root->right)
+		return 1;
+	return TreeLeafSize(root->left) + TreeLeafSize(root->right);
+}
+
+
+int main()
+{
+	BTNode* A = (BTNode*)malloc(sizeof(BTNode));
+	A->data = 'A';
+	A->left = NULL;
+	A->right = NULL;
+
+	BTNode* B = (BTNode*)malloc(sizeof(BTNode));
+	B->data = 'B';
+	B->left = NULL;
+	B->right = NULL;
+
+	BTNode* C = (BTNode*)malloc(sizeof(BTNode));
+	C->data = 'C';
+	C->left = NULL;
+	C->right = NULL;
+
+	BTNode* D = (BTNode*)malloc(sizeof(BTNode));
+	D->data = 'D';
+	D->left = NULL;
+	D->right = NULL;
+
+	BTNode* E = (BTNode*)malloc(sizeof(BTNode));
+	E->data = 'E';
+	E->left = NULL;
+	E->right = NULL;
+
+	A->left = B;
+	A->right = C;
+	B->left = D;
+	B->right = E;
+
+	PrevOrder(A);
+	printf("\n");
+	InOrder(A);
+	printf("\n");
+	PostOrder(A);
+	printf("\n");
+
+	printf("%d\n", TreeSize(A));
+	printf("%d\n", TreeLeafSize(A));
+
+	return 0;
+}
+
+
+
+//判断树是否是高度平衡的二叉树。（一个二叉树每个节点 的左右两个子树的高度差的绝对值不超过 1 。）
+struct TreeNode {
+	int val;
+	struct TreeNode* left;
+	struct TreeNode* right;
+};
+
+//求树的最大深度
+int maxDepth(struct TreeNode* root) {
+	if (NULL == root)
+		return 0;
+	int leftDepth = maxDepth(root->left);
+	int rightDepth = maxDepth(root->right);
+	return leftDepth > rightDepth ? leftDepth + 1 : rightDepth + 1;
+}
+
+bool isBalanced(struct TreeNode* root)
+{
+	if (NULL == root)
+		return true;
+
+	int leftDepth = maxDepth(root->left);
+	int rightDepth = maxDepth(root->right);
+	return abs(leftDepth - rightDepth) < 2
+		&& isBalanced(root->left)
+		&& isBalanced(root->right);
+}
+
+
+
+//给你二叉树的根节点 root ，返回它节点值的 前序 遍历。
+int Treesize(struct TreeNode* root)
+{
+	return root == NULL ? 0 : Treesize(root->left) + Treesize(root->right) + 1;
+}
+void PrevOrder(struct TreeNode* root, int* a, int* pi)
+{
+	if (NULL == root)
+		return;
+	a[*pi] = root->val;
+	++(*pi);
+	PrevOrder(root->left, a, pi);
+	PrevOrder(root->right, a, pi);
+}
+int* preorderTraversal(struct TreeNode* root, int* returnSize) {
+	int size = Treesize(root);//计算树的节点的个数
+	int* a = malloc(sizeof(int) * size);
+	int i = 0;
+	PrevOrder(root, a, &i);
+	*returnSize = size;
+	return a;
+}
