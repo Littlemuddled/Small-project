@@ -1,0 +1,140 @@
+#include<stdio.h>
+
+void PrintArray(int* a, int n)
+{
+	for (int i = 0; i < n; ++i)
+	{
+		printf("%d ", a[i]);
+	}
+	printf("\n");
+}
+void Swap(int* left, int* right)
+{
+	int tmp = *left;
+	*left = *right;
+	*right = tmp;
+}
+
+//插入排序(升序)  
+void InsertSort(int* a, int n)
+{
+	for (int i = 0; i < n - 1; ++i)
+	{
+		//[0, end]有序，end+1位置的值插入进去，让[0, end+1]有序
+		int end = i;
+		int tmp = a[end + 1];
+		while (end >= 0)
+		{
+			if (a[end] > tmp)
+			{
+				a[end + 1] = a[end];
+				--end;
+			}
+			else
+			{
+				break;
+			}
+		}
+		a[end + 1] = tmp;
+	}
+}
+void TestInsertSort()
+{
+	int a[] = { 3,6,2,7,8,6,1,9,4,0 };
+	InsertSort(a, sizeof(a) / sizeof(int));
+	PrintArray(a, sizeof(a) / sizeof(int));
+}
+
+
+//希尔排序（直接插入排序的优化）
+void ShellSort(int* a, int n)
+{
+	int gap = n;
+	while (gap > 1)
+	{
+		//必须保证最后一次gap=1  当gap>1都是预排序（接近有序）  gap==1直接插入排序（有序） 
+		//gap /= 2;
+		gap = gap/3 + 1;
+		for (int i = 0; i < n - gap; ++i)
+		{
+			int end = i;
+			int tmp = a[end + gap];
+			while (end >= 0)
+			{
+				if (a[end] > tmp)
+				{
+					a[end + gap] = a[end];
+					end -= gap;
+				}
+				else
+				{
+					break;
+				}
+			}
+			a[end + gap] = tmp;
+		}
+	}
+} 
+void TestShellSort()
+{
+	int a[] = { 3,6,2,7,8,6,1,9,4,0 };
+	ShellSort(a, sizeof(a) / sizeof(int));
+	PrintArray(a, sizeof(a) / sizeof(int));
+}
+
+
+//向下调整算法(前提是左右子树都是小堆)
+void AdjustDown(int* a, int n, int root)
+{
+	int parent = root;
+	int child = parent * 2 + 1;//默认是左孩子
+	while(child < n)
+	{
+		//选出左右孩子中小的那一个(大堆的话>)
+		if (child + 1 < n && a[child + 1] < a[child])
+			child += 1;
+		if (a[child] < a[parent])
+		{
+			//孩子中小的那一个小于父亲就交换
+			Swap(&a[child], &a[parent]);
+			parent = child;
+			child = parent * 2 + 1;
+		}
+		else
+			break;
+	}
+}
+//堆排序
+void HeadSort(int* a, int n)
+{
+	//建堆
+	for (int i = (n - 1 - 1) / 2; i >= 0; --i)// (i = (n - 1 - 1) / 2)通过最后一个叶子节点找到他的父亲
+	{
+		AdjustDown(a, n, i);
+	}
+	//排降序，建小堆（排升序，建大堆）
+	int end = n - 1;
+	while (end > 0)
+	{
+		Swap(&a[0], &a[end]);
+		AdjustDown(a, end, 0);
+		--end;
+	}
+}
+void TestHeadSort()
+{
+	int a[] = { 3,6,2,7,8,6,1,9,4,0 };
+	HeadSort(a, sizeof(a) / sizeof(int));
+	PrintArray(a, sizeof(a) / sizeof(int));
+}
+
+
+
+
+int main()
+{
+	TestInsertSort();
+	TestShellSort();
+	TestHeadSort();
+	return;
+}
